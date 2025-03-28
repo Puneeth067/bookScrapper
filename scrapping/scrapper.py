@@ -9,26 +9,7 @@ from scrapping.config import ScrapingConfig
 class BookScraper:
     def __init__(self, base_url):
         self.base_url = base_url
-        # Create a more detailed logger
-        self.logger = logging.getLogger('BookScraperLogger')
-        self.logger.setLevel(logging.DEBUG)
-        
-        # Create console handler and set level to DEBUG
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
-        
-        # Create file handler 
-        fh = logging.FileHandler('book_scraper_debug.log')
-        fh.setLevel(logging.DEBUG)
-        
-        # Create formatter
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        fh.setFormatter(formatter)
-        
-        # Add handlers to logger
-        self.logger.addHandler(ch)
-        self.logger.addHandler(fh)
+        self.logger = ScrapingConfig.LOGGER
         
         # Update raw_data directory path
         self.raw_data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'raw_data')
@@ -76,7 +57,7 @@ class BookScraper:
             page_url = self.base_url
             page_count = 0
             
-            while page_url:
+            while page_url and page_count < ScrapingConfig.MAX_PAGES:
                 self.logger.info(f"Scraping page: {page_url}")
                 
                 # Fetch the page
@@ -106,11 +87,6 @@ class BookScraper:
                     page_count += 1
                 else:
                     page_url = None
-                
-                # Limit to prevent infinite scraping
-                if page_count >= 5:
-                    self.logger.info("Reached maximum page limit")
-                    break
         
         except Exception as e:
             self.logger.error(f"Unexpected error during scraping: {e}")
@@ -135,45 +111,35 @@ class BookScraper:
 def lambdaHandler(event, context):
     """Handler for scraping based on scraper ID."""
     try:
-        # Setup logging for this handler
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            filename='lambda_handler_debug.log'
-        )
-        logger = logging.getLogger('LambdaHandler')
-        
         scraper_input = event.get('scraper_input', {})
         scraper_id = scraper_input.get('run_scraper_id')
         
-        logger.info(f"Received scraper input: {scraper_input}")
+        ScrapingConfig.LOGGER.info(f"Received scraper input: {scraper_input}")
         
         # Update path to use absolute path
         config_path = os.path.join(os.path.dirname(__file__), 'run_scrapper.json')
         
-        logger.info(f"Loading config from: {config_path}")
+        ScrapingConfig.LOGGER.info(f"Loading config from: {config_path}")
         
         # Load scraper configurations
         with open(config_path, 'r') as f:
             config = json.load(f)
         
-        logger.info(f"Loaded config: {config}")
-        
         # Find matching scraper
         scraper_config = next((s for s in config['scrapers'] if s['id'] == scraper_id), None)
         
         if not scraper_config:
-            logger.error(f"No scraper found with ID {scraper_id}")
+            ScrapingConfig.LOGGER.error(f"No scraper found with ID {scraper_id}")
             raise ValueError(f"No scraper found with ID {scraper_id}")
         
-        logger.info(f"Found scraper config: {scraper_config}")
+        ScrapingConfig.LOGGER.info(f"Found scraper config: {scraper_config}")
         
         # Scrape books
         scraper = BookScraper(scraper_config['url'])
         csv_path = scraper.scrape_books()
         
         if not csv_path:
-            logger.error("Scraping failed: No CSV path returned")
+            ScrapingConfig.LOGGER.error("Scraping failed: No CSV path returned")
         
         return {
             'statusCode': 200 if csv_path else 500,
@@ -183,8 +149,7 @@ def lambdaHandler(event, context):
             })
         }
     except Exception as e:
-        logger = logging.getLogger('LambdaHandler')
-        logger.error(f"Scraping failed: {e}", exc_info=True)
+        ScrapingConfig.LOGGER.error(f"Scraping failed: {e}", exc_info=True)
         return {
             'statusCode': 500,
             'body': json.dumps({

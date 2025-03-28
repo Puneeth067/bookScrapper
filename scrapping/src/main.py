@@ -6,17 +6,21 @@ import json
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, project_root)
 
-# Now import the scrapper module
-from scrapping.scrapper import lambdaHandler
+# Import the processor module
+from processing.processor import lambdaHandler
 
 def main():
+    # Default input for processing
     inputDA = {
-        "scraper_input": {
-            "scraper_name": "data_ingestion",
-            "run_scraper_id": "102"  
+        "processing_input": {
+            "raw_data_id": "102"  # Default raw data ID
         }
     }
+    
+    # Call the lambda handler
     result = lambdaHandler(inputDA, "")
+    
+    # Print the result
     print(json.dumps(result, indent=2))
 
 if __name__ == "__main__":

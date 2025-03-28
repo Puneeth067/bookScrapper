@@ -5,5 +5,4 @@ pytest
 python-json-logger
 fastparquet
 pyarrow
-requests
 bs4

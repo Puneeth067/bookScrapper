@@ -7,6 +7,9 @@ class ProcessingConfig:
     # Timeout for processing operations
     PROCESSING_TIMEOUT = 30
     
+    # Maximum number of rows to process (optional safety limit)
+    MAX_ROWS = 10000
+    
     # Logging configuration
     logging.basicConfig(
         level=logging.INFO,
