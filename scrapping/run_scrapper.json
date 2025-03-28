@@ -1,0 +1,10 @@
+{
+  "scrapers": [
+      {
+          "id": "102",
+          "name": "books_to_scrape",
+          "url": "http://books.toscrape.com/",
+          "description": "Book scraping from main website"
+      }
+  ]
+}

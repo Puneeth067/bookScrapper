@@ -1,1 +1,42 @@
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+env/
+venv/
+ENV/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Project specific - keep folder structure but ignore contents
+scrapping/raw_data/*
+!scrapping/raw_data/.gitkeep
+processing/processed_data/*
+!processing/processed_data/.gitkeep
+
+# Logs
+*.log
+
+# Local environment variables
+.env
+.env.local
+
+# OS specific
+.DS_Store
+Thumbs.db
 .qodo
