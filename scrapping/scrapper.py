@@ -5,14 +5,15 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 from scrapping.config import ScrapingConfig
+from urllib.parse import urljoin
 
 class BookScraper:
     def __init__(self, base_url):
         self.base_url = base_url
         self.logger = ScrapingConfig.LOGGER
         
-        # Update raw_data directory path
-        self.raw_data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'raw_data')
+        # Update raw_data directory path to be within the scrapping folder
+        self.raw_data_dir = os.path.join(os.path.dirname(__file__), 'raw_data')
         os.makedirs(self.raw_data_dir, exist_ok=True)
         
         self.logger.info(f"Initialized BookScraper with base URL: {base_url}")
@@ -36,7 +37,9 @@ class BookScraper:
             availability = book.find('div', class_='product_price').find('p', class_='instock availability').text.strip()
             
             # Product URL
-            product_url = self.base_url + book.find('h3').find('a')['href']
+            relative_url = book.find('h3').find('a')['href']
+            # Use urljoin to correctly construct the full URL
+            product_url = urljoin(self.base_url, 'catalogue/' + relative_url)
             
             return {
                 'Title': title,
@@ -83,7 +86,9 @@ class BookScraper:
                 # Check for next page
                 next_link = soup.find('li', class_='next')
                 if next_link:
-                    page_url = self.base_url + 'catalogue/' + next_link.find('a')['href']
+                    # Construct the next page URL correctly
+                    next_page_link = next_link.find('a')['href']
+                    page_url = urljoin(page_url, next_page_link)
                     page_count += 1
                 else:
                     page_url = None
