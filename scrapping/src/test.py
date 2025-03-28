@@ -4,17 +4,17 @@ import pytest
 import csv
 import json
 
-# Add parent directory to Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add project root to Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, project_root)
 
-from scrapper import lambdaHandler
+from scrapping.scrapper import lambdaHandler
 
 class TestBookScraping:
     @pytest.fixture
     def scraper_input(self):
         return {
             "scraper_input": {
-                "scraper_name": "data_ingestion",
                 "run_scraper_id": "102"  
             }
         }
@@ -24,13 +24,15 @@ class TestBookScraping:
         result = lambdaHandler(scraper_input, "")
         assert result['statusCode'] == 200, "Scraping failed"
         
-        csv_path = json.loads(result['body'])['csv_path']
+        body = json.loads(result['body'])
+        csv_path = body['csv_path']
         assert os.path.exists(csv_path), "CSV file was not created"
 
     def test_csv_file_extraction(self, scraper_input):
         """Test Case 2: Verify CSV File Extraction"""
         result = lambdaHandler(scraper_input, "")
-        csv_path = json.loads(result['body'])['csv_path']
+        body = json.loads(result['body'])
+        csv_path = body['csv_path']
         
         with open(csv_path, 'r', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
@@ -40,7 +42,8 @@ class TestBookScraping:
     def test_file_type_and_format(self, scraper_input):
         """Test Case 3: Validate File Type and Format"""
         result = lambdaHandler(scraper_input, "")
-        csv_path = json.loads(result['body'])['csv_path']
+        body = json.loads(result['body'])
+        csv_path = body['csv_path']
         
         assert csv_path.endswith('.csv'), "File is not a CSV"
         
@@ -53,7 +56,8 @@ class TestBookScraping:
     def test_data_structure(self, scraper_input):
         """Test Case 4: Validate Data Structure"""
         result = lambdaHandler(scraper_input, "")
-        csv_path = json.loads(result['body'])['csv_path']
+        body = json.loads(result['body'])
+        csv_path = body['csv_path']
         
         with open(csv_path, 'r', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
