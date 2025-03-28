@@ -1,8 +1,24 @@
 {
-  "raw_data_files": [
-    {
-      "id": "102",
-      "path": "./scrapping/raw_data/books_data.csv"
-    }
-  ]
+    "raw_data_files": [
+        {
+            "id": "102",
+            "path": "./scrapping/raw_data/books_data.csv"
+        },
+        {
+            "id": "103",
+            "path": "../scrapping/raw_data/sample_books_data.csv"
+        },
+        {
+            "id": "103",
+            "path": "../scrapping/raw_data/sample_books_data.csv"
+        },
+        {
+            "id": "103",
+            "path": "../scrapping/raw_data/sample_books_data.csv"
+        },
+        {
+            "id": "103",
+            "path": "../scrapping/raw_data/sample_books_data.csv"
+        }
+    ]
 }
