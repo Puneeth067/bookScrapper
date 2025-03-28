@@ -1,0 +1,8 @@
+{
+  "raw_data_files": [
+      {
+          "id": "102",
+          "path": "raw_data/books_data.csv"
+      }
+  ]
+}

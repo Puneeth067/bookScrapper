@@ -1,0 +1,9 @@
+requests
+beautifulsoup4
+pandas
+pytest
+python-json-logger
+fastparquet
+pyarrow
+requests
+bs4
