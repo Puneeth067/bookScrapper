@@ -14,18 +14,21 @@ class BookProcessor:
 
     def _clean_data(self, df):
         """Clean and validate the input DataFrame."""
+        # Create a copy of the DataFrame to avoid SettingWithCopyWarning
+        df = df.copy()
+        
         # Remove rows with missing critical information
         df = df.dropna(subset=['Title', 'Price', 'Rating', 'Availability', 'URL'])
         
         # Convert Price to numeric, handling potential formatting issues
-        df['Price'] = pd.to_numeric(df['Price'].str.replace('£', ''), errors='coerce')
+        df.loc[:, 'Price'] = pd.to_numeric(df['Price'].str.replace('£', ''), errors='coerce')
         
         # Ensure Rating is numeric and within 1-5 range
-        df['Rating'] = pd.to_numeric(df['Rating'], errors='coerce')
+        df.loc[:, 'Rating'] = pd.to_numeric(df['Rating'], errors='coerce')
         df = df[(df['Rating'] >= 1) & (df['Rating'] <= 5)]
         
         # Clean Availability
-        df['Availability'] = df['Availability'].apply(lambda x: 'In Stock' if 'in stock' in str(x).lower() else 'Out of Stock')
+        df.loc[:, 'Availability'] = df['Availability'].apply(lambda x: 'In Stock' if 'in stock' in str(x).lower() else 'Out of Stock')
         
         # Limit rows if needed
         if len(df) > ProcessingConfig.MAX_ROWS:

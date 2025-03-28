@@ -31,19 +31,24 @@ class TestBookProcessing:
         })
 
         # Ensure the raw_data directory exists
-        os.makedirs(os.path.join(project_root, 'scrapping', 'raw_data'), exist_ok=True)
+        raw_data_dir = os.path.join(project_root, 'scrapping', 'raw_data')
+        os.makedirs(raw_data_dir, exist_ok=True)
 
         # Save sample data
-        sample_csv_path = os.path.join(project_root, 'scrapping', 'raw_data', 'sample_books_data.csv')
+        sample_csv_filename = 'sample_books_data.csv'
+        sample_csv_path = os.path.join(raw_data_dir, sample_csv_filename)
         sample_data.to_csv(sample_csv_path, index=False)
 
         # Update run_raw_data.json
         config_path = os.path.join(project_root, 'processing', 'run_raw_data.json')
         with open(config_path, 'r+') as f:
             config = json.load(f)
+            # Remove any existing entries with id '103'
+            config['raw_data_files'] = [item for item in config['raw_data_files'] if item.get('id') != '103']
+            # Add new entry
             config['raw_data_files'].append({
                 "id": "103",
-                "path": "../scrapping/raw_data/sample_books_data.csv"
+                "path": f"./scrapping/raw_data/{sample_csv_filename}"
             })
             f.seek(0)
             json.dump(config, f, indent=4)
