@@ -7,7 +7,9 @@ from processing.config import ProcessingConfig
 class BookProcessor:
     def __init__(self):
         self.logger = ProcessingConfig.LOGGER
-        self.processed_data_dir = ProcessingConfig.PROCESSED_DATA_DIR
+        
+        # Use absolute path for processed data directory
+        self.processed_data_dir = os.path.join(os.path.dirname(__file__), 'processed_data')
         os.makedirs(self.processed_data_dir, exist_ok=True)
 
     def _clean_data(self, df):
@@ -78,11 +80,24 @@ def lambdaHandler(event, context):
             ProcessingConfig.LOGGER.error(f"No raw data file found with ID {file_id}")
             raise ValueError(f"No raw data file found with ID {file_id}")
         
+        # Get the project root directory (bookScrapper directory)
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        # Convert relative path to absolute path, using project root
+        absolute_input_path = os.path.normpath(os.path.join(project_root, file_config['path']))
+        
+        ProcessingConfig.LOGGER.info(f"Project root: {project_root}")
+        ProcessingConfig.LOGGER.info(f"Absolute input path: {absolute_input_path}")
         ProcessingConfig.LOGGER.info(f"Found raw data file config: {file_config}")
+        
+        # Check if input file exists
+        if not os.path.exists(absolute_input_path):
+            ProcessingConfig.LOGGER.error(f"Input file does not exist: {absolute_input_path}")
+            raise FileNotFoundError(f"Input file not found: {absolute_input_path}")
         
         # Process books
         processor = BookProcessor()
-        parquet_path = processor.process_data(file_config['path'])
+        parquet_path = processor.process_data(absolute_input_path)
         
         if not parquet_path:
             ProcessingConfig.LOGGER.error("Processing failed: No Parquet path returned")
