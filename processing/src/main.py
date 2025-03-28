@@ -1,17 +1,27 @@
-import json
 import os
 import sys
+import json
 
-# Add parent directory to Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add the project root directory to the Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, project_root)
 
-from processor import lambdaHandler
+# Import the processor module
+from processing.processor import lambdaHandler
 
-if __name__ == "__main__":
+def main():
+    # Default input for processing
     inputDA = {
         "processing_input": {
-            "raw_data_id": "102"
+            "raw_data_id": "102"  # Default raw data ID
         }
     }
+    
+    # Call the lambda handler
     result = lambdaHandler(inputDA, "")
+    
+    # Print the result
     print(json.dumps(result, indent=2))
+
+if __name__ == "__main__":
+    main()

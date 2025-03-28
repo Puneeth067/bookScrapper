@@ -7,8 +7,8 @@ class ScrapingConfig:
     # Timeout for HTTP requests in seconds
     REQUEST_TIMEOUT = 10
     
-    # Base URL for books to scrape
-    BASE_URL = "http://books.toscrape.com/"
+    # Maximum number of pages to scrape (to prevent infinite scraping)
+    MAX_PAGES = 50
     
     # Logging configuration
     logging.basicConfig(
