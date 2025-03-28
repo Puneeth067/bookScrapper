@@ -6,14 +6,14 @@ import json
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, project_root)
 
-# Import the processor module
-from processing.processor import lambdaHandler
+# Import the scraper module
+from scrapping.scrapper import lambdaHandler
 
 def main():
-    # Default input for processing
+    # Default input for scraping
     inputDA = {
-        "processing_input": {
-            "raw_data_id": "102"  # Default raw data ID
+        "scraper_input": {
+            "run_scraper_id": "102"  # Default scraper ID
         }
     }
     
