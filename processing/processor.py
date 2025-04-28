@@ -30,6 +30,14 @@ class BookProcessor:
         # Clean Availability
         df.loc[:, 'Availability'] = df['Availability'].apply(lambda x: 'In Stock' if 'in stock' in str(x).lower() else 'Out of Stock')
         
+        # Clean Subcategory - standardize naming
+        if 'Subcategory' in df.columns:
+            df.loc[:, 'Subcategory'] = df['Subcategory'].apply(lambda x: x.strip() if isinstance(x, str) else "Unknown")
+            # Fill missing subcategories
+            df.loc[:, 'Subcategory'] = df['Subcategory'].fillna("Unknown")
+        else:
+            df.loc[:, 'Subcategory'] = "Unknown"
+        
         # Limit rows if needed
         if len(df) > ProcessingConfig.MAX_ROWS:
             self.logger.warning(f"Truncating data to {ProcessingConfig.MAX_ROWS} rows")
