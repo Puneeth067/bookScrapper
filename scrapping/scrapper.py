@@ -41,17 +41,35 @@ class BookScraper:
             # Use urljoin to correctly construct the full URL
             product_url = urljoin(self.base_url, 'catalogue/' + relative_url)
             
+            # Get subcategory from the book detail page
+            subcategory = "Unknown"  # Default value
+            try:
+                # Visit the book's detail page
+                detail_page = requests.get(product_url, timeout=ScrapingConfig.REQUEST_TIMEOUT)
+                detail_soup = BeautifulSoup(detail_page.text, 'html.parser')
+                
+                # Find the breadcrumb navigation
+                breadcrumb = detail_soup.find('ul', class_='breadcrumb')
+                if breadcrumb and len(breadcrumb.find_all('li')) >= 3:
+                    # Usually, the subcategory is the third item in the breadcrumb
+                    subcategory_element = breadcrumb.find_all('li')[2]
+                    subcategory = subcategory_element.text.strip()
+                
+            except Exception as e:
+                self.logger.warning(f"Failed to get subcategory for {title}: {e}")
+            
             return {
                 'Title': title,
                 'Price': price,
                 'Rating': rating,
                 'Availability': availability,
-                'URL': product_url
+                'URL': product_url,
+                'Subcategory': subcategory
             }
         except Exception as e:
             self.logger.error(f"Error extracting book details: {e}")
             return None
-
+    
     def scrape_books(self):
         """Scrape books from all pages."""
         books_data = []
