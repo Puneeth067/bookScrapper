@@ -36,69 +36,27 @@ class BookScraper:
             # Availability
             availability = book.find('div', class_='product_price').find('p', class_='instock availability').text.strip()
             
-            # Product URL - Fix the URL construction
+            # Product URL
             relative_url = book.find('h3').find('a')['href']
-            
-            # Determine if we're dealing with full or relative paths
-            if relative_url.startswith('http'):
-                product_url = relative_url
-            else:
-                # Remove '../' prefix if present for better URL joining
-                cleaned_relative_url = relative_url
-                if cleaned_relative_url.startswith('../'):
-                    cleaned_relative_url = cleaned_relative_url[3:]
-                
-                # Use urljoin properly based on the current context
-                if self.base_url.endswith('/catalogue/'):
-                    product_url = urljoin(self.base_url, cleaned_relative_url)
-                else:
-                    product_url = urljoin(self.base_url, 'catalogue/' + cleaned_relative_url)
+            # Use urljoin to correctly construct the full URL
+            product_url = urljoin(self.base_url, 'catalogue/' + relative_url)
             
             # Get subcategory from the book detail page
             subcategory = "Unknown"  # Default value
             try:
-                # Add more robust request handling with retries
-                retries = 0
-                while retries < ScrapingConfig.MAX_RETRIES:
-                    try:
-                        self.logger.info(f"Fetching detail page for '{title}': {product_url}")
-                        detail_page = requests.get(product_url, timeout=ScrapingConfig.REQUEST_TIMEOUT)
-                        detail_page.raise_for_status()
-                        
-                        detail_soup = BeautifulSoup(detail_page.text, 'html.parser')
-                        
-                        # Try multiple strategies to get the category
-                        # Strategy 1: Via breadcrumb
-                        breadcrumb = detail_soup.find('ul', class_='breadcrumb')
-                        if breadcrumb and len(breadcrumb.find_all('li')) >= 3:
-                            subcategory_element = breadcrumb.find_all('li')[2]
-                            subcategory = subcategory_element.text.strip()
-                        
-                        # Strategy 2: Via UL navigation if breadcrumb failed
-                        if subcategory == "Unknown":
-                            category_nav = detail_soup.select('ul.nav-list > li > ul > li > a')
-                            if category_nav:
-                                current_category = detail_soup.select('ul.nav-list > li > ul > li.active > a')
-                                if current_category:
-                                    subcategory = current_category[0].text.strip()
-                        
-                        # If we found a subcategory, break out of retry loop
-                        if subcategory != "Unknown":
-                            break
-                        
-                        retries += 1
-                        
-                    except requests.RequestException as e:
-                        self.logger.warning(f"Request failed for {title} (attempt {retries+1}): {e}")
-                        retries += 1
-                        if retries >= ScrapingConfig.MAX_RETRIES:
-                            raise
-                        
-                if subcategory == "Unknown":
-                    self.logger.warning(f"Could not determine subcategory for '{title}' after {ScrapingConfig.MAX_RETRIES} attempts")
-                    
+                # Visit the book's detail page
+                detail_page = requests.get(product_url, timeout=ScrapingConfig.REQUEST_TIMEOUT)
+                detail_soup = BeautifulSoup(detail_page.text, 'html.parser')
+                
+                # Find the breadcrumb navigation
+                breadcrumb = detail_soup.find('ul', class_='breadcrumb')
+                if breadcrumb and len(breadcrumb.find_all('li')) >= 3:
+                    # Usually, the subcategory is the third item in the breadcrumb
+                    subcategory_element = breadcrumb.find_all('li')[2]
+                    subcategory = subcategory_element.text.strip()
+                
             except Exception as e:
-                self.logger.warning(f"Failed to get subcategory for '{title}': {e}")
+                self.logger.warning(f"Failed to get subcategory for {title}: {e}")
             
             return {
                 'Title': title,
