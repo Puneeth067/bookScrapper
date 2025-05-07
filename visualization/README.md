@@ -1,22 +1,18 @@
 
 # 📊 Power BI Dashboard: Book Data Analysis
 
-## 🗂️ Overview
+## 📂️ Overview
 
 This Power BI report provides an interactive and insightful analysis of book data scraped from an online bookstore. It includes data cleaning, transformation, DAX calculations, rich visuals, and drill-through capabilities to help users explore pricing, stock availability, and rating patterns effectively.
 
----
+## 🗬️ Data Import
 
-## 🛅 Data Import
-
-### Steps:
+**Steps:**
 
 1. Open **Power BI Desktop**
-2. Go to **Home** > **Get Data** > **Text/CSV**
+2. Go to **Home > Get Data > Text/CSV**
 3. Load the dataset from: `scrapping/raw_data/books_data.csv`
 4. Click **Transform Data** to clean and prepare the dataset
-
----
 
 ## 🧹 Data Cleaning (Power Query Editor)
 
@@ -24,11 +20,11 @@ Steps performed:
 
 * Removed duplicates
 * Trimmed whitespaces
-* Standardized the `Availability` column to "In Stock" / "Out of Stock"
-* Converted `Price` from text (`£33.34`) to numeric
-* Converted prices from GBP to USD (`£1 = $1.32`)
+* Standardized the `Availability` column to `In Stock` / `Out of Stock`
+* Converted `Price` from text (£33.34) to numeric
+* Converted prices from GBP to USD (£1 = $1.32)
 
-### Sample M Code Snippet:
+**Sample M Code Snippet:**
 
 ```m
 let
@@ -48,13 +44,11 @@ in
     StandardizedAvailability
 ```
 
----
-
 ## 🧾 DAX Calculations
 
-### 🔁 Calculated Columns:
+### 🔁 Calculated Columns
 
-```dax
+```DAX
 Price_USD = [Price] * 1.32
 
 Price_Category =
@@ -62,9 +56,9 @@ IF([Price_USD] < 26.40, "Budget",
    IF([Price_USD] < 66, "Standard", "Premium"))
 ```
 
-### 🕥 Measures:
+### 🕥 Measures
 
-```dax
+```DAX
 Total Books = COUNTROWS(books_data)
 
 Average Price = AVERAGE(books_data[Price_USD])
@@ -87,21 +81,19 @@ AVERAGEX(
 )
 ```
 
----
-
 ## 📊 Visualizations
 
 ### 🔹 KPI Cards
 
-* **Total Books**
-* **Average Price (USD)**
-* **% In Stock**
+* Total Books
+* Average Price (USD)
+* % In Stock
 
 ### 🔹 Charts
 
-1. **Bar Chart** : Average Price by Rating (X = Rating, Y = Avg Price)
-2. **Pie Chart** : Stock Status (In Stock vs Out of Stock)
-3. **Donut Chart** : Price Category (Budget / Standard / Premium)
+* **Bar Chart** : Average Price by Rating (X = Rating, Y = Avg Price)
+* **Pie Chart** : Stock Status (In Stock vs Out of Stock)
+* **Donut Chart** : Price Category (Budget / Standard / Premium)
 
 ### 🔹 Table View
 
@@ -113,37 +105,33 @@ Displays:
 * Availability
 * Price Category
 
-#### Conditional Formatting:
+**Conditional Formatting:**
 
-* `Price_USD > 66`: Highlight with **gold**
-* `Rating <= 2`: Highlight with **red background/font**
-
----
+* `Price_USD > 66`: Highlight with gold
+* `Rating <= 2`: Highlight with red background/font
 
 ## 🎛️ Filters and Slicers
 
-* **Rating** (1–5)
-* **Availability** (In Stock / Out of Stock)
-* **Price Category** (Budget / Standard / Premium)
-* **Price Range Slider**
-
----
+* Rating (1–5)
+* Availability (In Stock / Out of Stock)
+* Price Category (Budget / Standard / Premium)
+* Price Range Slider
 
 ## 🔍 Drill-Through
 
-Users can **right-click** on any price category in the donut chart to drill into a detail page showing book-level information for that category.
-
----
+Right-click on any **price category** in the donut chart to drill into a **detail page** showing book-level information for that category.
 
 ## 🧪 Testing and Verification
 
-* ✅ Data Loaded Correctly
-* ✅ Prices converted from GBP to USD
-* ✅ Conditional formatting applied
-* ✅ Filters working as expected
-* ✅ Measures & Visuals update dynamically
+✅ Data Loaded Correctly
 
----
+✅ Prices converted from GBP to USD
+
+✅ Conditional formatting applied
+
+✅ Filters working as expected
+
+✅ Measures & Visuals update dynamically
 
 ## 🔄 Maintenance
 
@@ -153,35 +141,27 @@ Users can **right-click** on any price category in the donut chart to drill into
 
 ### Edit Values
 
-* In Power Query, use "Replace Values" or "Transform" to edit a cell or column
-
----
+* In Power Query, use **"Replace Values"** or **"Transform"** to edit a cell or column
 
 ## 🚀 Exporting
 
-1. Right-click any visual > **Export Data**
-2. Choose summarized or underlying data (CSV/Excel)
-
----
+* Right-click any visual > **Export Data**
+* Choose **summarized** or **underlying data** (CSV/Excel)
 
 ## 🛠️ Tech Stack
 
-* Power BI Desktop
-* DAX (for measures & calculated columns)
-* Power Query M (for transformation)
-* CSV (as data source)
-
----
+* **Power BI Desktop**
+* **DAX** (for measures & calculated columns)
+* **Power Query M** (for transformation)
+* **CSV** (as data source)
 
 ## 📌 Notes
 
-* Currency conversion rate used: **£1 = $1.32**
-* Price category thresholds:
-  * Budget: <$26.40
-  * Standard: $26.40–$66
-  * Premium: >$66
-
----
+* **Currency conversion rate** used: £1 = $1.32
+* **Price category thresholds** :
+* Budget: <$26.40
+* Standard: $26.40–$66
+* Premium: >$66
 
 ## 📁 File Structure (Example)
 
@@ -191,11 +171,9 @@ Users can **right-click** on any price category in the donut chart to drill into
 │   └── raw_data/
 │       └── books_data.csv
 └── visualization/
-│   └──books_visualize_data.pbix
+    └── books_visualize_data.pbix
 ```
-
----
 
 ## 👩‍💻 Author
 
-*Created by Puneeth Kumar for Power BI Book Analysis Project*
+Created by **Puneeth Kumar** for **Power BI Book Analysis Project**
